@@ -27,18 +27,31 @@ const Burger = (props) => {
   we would have arrays of length 2, 2, and 1. We cannot map over just Array(2) or Array(1) though, since those 
   arrays don't have an index property yet. Using the spread, ..., operator, we create an indexed array that we can map over,
   e.g. [...Array(2)]
-  The second map call fills each element in the empty array with a BurgerIngredient of the corresponding type. */
+  The second map call fills each element in the empty array with a BurgerIngredient of the corresponding type.
+  Transformed ingredients will be an array where each element 
+  is itself an array that contains a BurgerIngredient of the corresponding
+  type repeated quantity number of times.
+  Finally, we flatten the array of arrays into just one array using reduce  */
   const ingredientNames = Object.keys(props.ingredients);
   console.log("Ingredient Names array:", ingredientNames);
-  const transformedIngredients = ingredientNames
-  .map(igKey => {
-    console.log("Ingredient key:", igKey);
-    return [...Array(props.ingredients[igKey])].map((_, i) => {
-      console.log("Empty array entry:", _);
-      return <BurgerIngredient key={igKey + i} type={igKey} />;
-    });
-  });
+  let transformedIngredients = ingredientNames
+    .map(igKey => {
+      console.log("Ingredient key:", igKey);
+      return [...Array(props.ingredients[igKey])].map((_, i) => {
+        console.log("Empty array entry:", _);
+        return <BurgerIngredient key={igKey + i} type={igKey} />;
+      });
+    })
+    // acc contains the updated root array we want to return in the end
+    .reduce((acc, cur) => {
+      return acc.concat(cur);
+    }, []);
+
   console.log("Transformed Ingredients:", transformedIngredients);
+
+  if (transformedIngredients.length === 0) {
+    transformedIngredients = <p>Please start adding ingredients!</p>;
+  }
 
   return (
     <div className={styles.Burger}>
